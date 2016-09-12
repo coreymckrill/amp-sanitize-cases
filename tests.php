@@ -8,6 +8,7 @@ require_once dirname( __FILE__ ) . '/lib/class-amp-string-utils.php';
 require_once dirname( __FILE__ ) . '/lib/class-amp-base-sanitizer.php';
 require_once dirname( __FILE__ ) . '/lib/class-amp-blacklist-sanitizer.php';
 require_once dirname( __FILE__ ) . '/lib/class-amp-style-sanitizer.php';
+require_once dirname( __FILE__ ) . '/lib/class-amp-style-sanitizer-noprocess.php';
 
 /**
  * Tests the performance of AMP sanitizer classes.
@@ -35,6 +36,8 @@ class AMPSanitizerTests {
 			'AMP_Blacklist_Sanitizer',
 			'AMP_Style_Sanitizer',
 			'Combined',
+			'AMP_Style_Sanitizer_NoProcess',
+			'Combined (no style processing)',
 		);
 		$results = array();
 
@@ -96,7 +99,7 @@ class AMPSanitizerTests {
 			$this->add_result( 'AMP_Style_Sanitizer', 'Results', $this->get_elapsed_time( $start, $stop ) );
 		}
 
-		// Combined
+		// Combined with processing
 		for ( $i = 0; $i < $n; $i++ ) {
 			$start = $this->start_timer();
 
@@ -116,6 +119,42 @@ class AMPSanitizerTests {
 			$stop = $this->stop_timer();
 
 			$this->add_result( 'Combined', 'Results', $this->get_elapsed_time( $start, $stop ) );
+		}
+
+		// Style without processing
+		for ( $i = 0; $i < $n; $i++ ) {
+			$start = $this->start_timer();
+
+			$dom = AMP_DOM_Utils::get_dom_from_content( $content );
+			$sanitizer = new AMP_Style_Sanitizer_NoProcess( $dom, array() );
+			$sanitizer->sanitize();
+			AMP_DOM_Utils::get_content_from_dom( $dom );
+
+			$stop = $this->stop_timer();
+
+			$this->add_result( 'AMP_Style_Sanitizer_NoProcess', 'Results', $this->get_elapsed_time( $start, $stop ) );
+		}
+
+		// Combined without processing
+		for ( $i = 0; $i < $n; $i++ ) {
+			$start = $this->start_timer();
+
+			$dom = AMP_DOM_Utils::get_dom_from_content( $content );
+
+			$sanitizers = array(
+				'AMP_Style_Sanitizer_NoProcess',
+				'AMP_Blacklist_Sanitizer',
+			);
+			foreach ( $sanitizers as $sanitizer_class ) {
+				$sanitizer = new $sanitizer_class( $dom, array() );
+				$sanitizer->sanitize();
+			}
+
+			AMP_DOM_Utils::get_content_from_dom( $dom );
+
+			$stop = $this->stop_timer();
+
+			$this->add_result( 'Combined (no style processing)', 'Results', $this->get_elapsed_time( $start, $stop ) );
 		}
 	}
 

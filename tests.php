@@ -99,8 +99,22 @@ class AMPSanitizerTests {
 			$this->add_result( 'AMP_Style_Sanitizer', 'Results', $this->get_elapsed_time( $start, $stop ) );
 		}
 
-		// Combined with processing
+		// Style without processing
 		for ( $i = 0; $i < $n; $i++ ) {
+			$start = $this->start_timer();
+
+			$dom = AMP_DOM_Utils::get_dom_from_content( $content );
+			$sanitizer = new AMP_Style_Sanitizer_NoProcess( $dom, array() );
+			$sanitizer->sanitize();
+			AMP_DOM_Utils::get_content_from_dom( $dom );
+
+			$stop = $this->stop_timer();
+
+			$this->add_result( 'AMP_Style_Sanitizer_NoProcess', 'Results', $this->get_elapsed_time( $start, $stop ) );
+		}
+
+		// Combined with processing
+		/*for ( $i = 0; $i < $n; $i++ ) {
 			$start = $this->start_timer();
 
 			$dom = AMP_DOM_Utils::get_dom_from_content( $content );
@@ -119,24 +133,10 @@ class AMPSanitizerTests {
 			$stop = $this->stop_timer();
 
 			$this->add_result( 'Combined', 'Results', $this->get_elapsed_time( $start, $stop ) );
-		}
-
-		// Style without processing
-		for ( $i = 0; $i < $n; $i++ ) {
-			$start = $this->start_timer();
-
-			$dom = AMP_DOM_Utils::get_dom_from_content( $content );
-			$sanitizer = new AMP_Style_Sanitizer_NoProcess( $dom, array() );
-			$sanitizer->sanitize();
-			AMP_DOM_Utils::get_content_from_dom( $dom );
-
-			$stop = $this->stop_timer();
-
-			$this->add_result( 'AMP_Style_Sanitizer_NoProcess', 'Results', $this->get_elapsed_time( $start, $stop ) );
-		}
+		}*/
 
 		// Combined without processing
-		for ( $i = 0; $i < $n; $i++ ) {
+		/*for ( $i = 0; $i < $n; $i++ ) {
 			$start = $this->start_timer();
 
 			$dom = AMP_DOM_Utils::get_dom_from_content( $content );
@@ -155,7 +155,7 @@ class AMPSanitizerTests {
 			$stop = $this->stop_timer();
 
 			$this->add_result( 'Combined (no style processing)', 'Results', $this->get_elapsed_time( $start, $stop ) );
-		}
+		}*/
 	}
 
 	public function start_timer() {

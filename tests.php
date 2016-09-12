@@ -16,13 +16,13 @@ require_once dirname( __FILE__ ) . '/lib/class-amp-style-sanitizer-noprocess.php
  * Adapted from tollmanz's kses tests: https://github.com/tollmanz/kses-cases
  */
 class AMPSanitizerTests {
-	public $num_tests = 1000;
+	public $num_tests = 5000;
 
 	public $data = array();
 
 	public $results = array();
 
-	public function __construct( $num_tests = 1000 ) {
+	public function __construct( $num_tests = 5000 ) {
 		$this->num_tests = $num_tests;
 	}
 

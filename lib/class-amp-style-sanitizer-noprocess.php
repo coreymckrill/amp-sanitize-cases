@@ -5,7 +5,7 @@
 /**
  * Collects inline styles and outputs them in the amp-custom stylesheet.
  */
-class AMP_Style_Sanitizer extends AMP_Base_Sanitizer {
+class AMP_Style_Sanitizer_NoProcess extends AMP_Base_Sanitizer {
 	private $styles = array();
 
 	public function sanitize() {

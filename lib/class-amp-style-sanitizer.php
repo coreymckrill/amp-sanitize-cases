@@ -29,11 +29,13 @@ class AMP_Style_Sanitizer extends AMP_Base_Sanitizer {
 			if ( $style ) {
 				$style = $this->process_style( $style );
 
-				$class_name = $this->generate_class_name( $style );
-				$new_class  = trim( $class . ' ' . $class_name );
+				if ( $style ) {
+					$class_name = $this->generate_class_name( $style );
+					$new_class  = trim( $class . ' ' . $class_name );
 
-				$node->setAttribute( 'class', $new_class );
-				$this->styles[ $class_name ] = $style;
+					$node->setAttribute( 'class', $new_class );
+					$this->styles[ $class_name ] = $style;
+				}
 			}
 		}
 
@@ -49,9 +51,21 @@ class AMP_Style_Sanitizer extends AMP_Base_Sanitizer {
 		// Filter properties
 		$string = safecss_filter_attr( $string );
 
+		if ( ! $string ) {
+			return '';
+		}
+
 		// Normalize order
 		$arr = array_map( 'trim', explode( ';', $string ) );
 		sort( $arr );
+
+		// Normalize whitespace
+		foreach ( $arr as $index => $rule ) {
+			$arr2 = array_map( 'trim', explode( ':', $rule, 2 ) );
+			if ( 2 === count( $arr2 ) ) {
+				$arr[ $index ] = $arr2[0] . ': ' . $arr2[1];
+			}
+		}
 
 		// Handle overflow rule
 		// https://www.ampproject.org/docs/reference/spec.html#properties
@@ -59,6 +73,10 @@ class AMP_Style_Sanitizer extends AMP_Base_Sanitizer {
 			foreach( $overflow as $index => $rule ) {
 				unset( $arr[ $index ] );
 			}
+		}
+
+		if ( empty( $arr ) ) {
+			return '';
 		}
 
 		return implode( ";\n\t", $arr ) . ';';
